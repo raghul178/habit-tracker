@@ -1,0 +1,126 @@
+let habits = [];
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("add-habit").addEventListener("click", addHabit);
+  document.getElementById("delete-all").addEventListener("click", deleteAllHabits);
+});
+
+// Add a new habit
+function addHabit() {
+  const habitInput = document.getElementById("habit-input");
+  const habitName = habitInput.value.trim();
+
+  if (habitName) {
+    habits.push({ name: habitName, streak: 0, badges: [], streakEntries: [] });
+    habitInput.value = ''; // Clear input field after adding
+    renderHabits();
+  } else {
+    alert("Please enter a habit!");
+  }
+}
+
+// Increment streak (Limit to 30 days)
+function incrementStreak(index) {
+  const habit = habits[index];
+  const today = new Date().toISOString().split("T")[0];
+
+  const todayEntry = habit.streakEntries.find(entry => entry.date === today);
+
+  if (!todayEntry) {
+    habit.streakEntries.push({ date: today, count: 1 });
+  } else {
+    todayEntry.count++;
+  }
+
+  if (habit.streak < 30) {
+    habit.streak++;
+    checkBadges(habit);
+  } else {
+    alert("You've reached the maximum streak of 30 days!");
+  }
+
+  renderHabits();
+}
+
+// Reset a habit
+function resetHabit(index) {
+  habits[index].streak = 0;
+  habits[index].streakEntries = [];
+  habits[index].badges = [];
+  renderHabits();
+}
+
+// Delete all habits & badges
+function deleteAllHabits() {
+  if (confirm("Are you sure you want to delete all habits?")) {
+    habits = [];
+    renderHabits();
+    renderBadges();
+  }
+}
+
+// Delete individual habit (along with badges)
+function deleteHabit(index) {
+  habits.splice(index, 1);
+  renderHabits();
+  renderBadges();
+}
+
+// Check badges (up to 30 days)
+function checkBadges(habit) {
+  habit.badges = []; // Reset badges before checking
+
+  if (habit.streak >= 1) habit.badges.push('⭐');
+  if (habit.streak >= 7) habit.badges.push('⭐⭐⭐⭐⭐⭐⭐');
+  if (habit.streak >= 15) habit.badges.push('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+  if (habit.streak >= 30) habit.badges.push('🏆');
+
+  renderBadges();
+}
+
+// Render habits
+function renderHabits() {
+  const habitList = document.getElementById("habit-list");
+  habitList.innerHTML = "";
+
+  habits.forEach((habit, index) => {
+    const habitElement = document.createElement("div");
+    habitElement.classList.add("habit-item");
+
+    habitElement.innerHTML = `
+      <span>${habit.name} (Streak: ${habit.streak}/30 days)</span>
+      <div>
+        <button class="increment" onclick="incrementStreak(${index})">+1</button>
+        <button class="reset" onclick="resetHabit(${index})">Reset</button>
+        <button class="delete" onclick="deleteHabit(${index})">Delete</button>
+      </div>
+      <div class="badges"><strong>Badges:</strong> ${habit.badges.join(" ")}</div>
+    `;
+    habitList.appendChild(habitElement);
+  });
+
+  renderStreaks();
+}
+
+// Render streaks
+function renderStreaks() {
+  document.getElementById("streak-list").innerHTML = habits
+    .filter(habit => habit.streak > 0)
+    .map(habit => `<li>${habit.name}: ${habit.streak}/30 days</li>`)
+    .join("");
+}
+
+// Render badges
+function renderBadges() {
+  const badgeList = document.getElementById("badge-list");
+  badgeList.innerHTML = "";
+
+  let uniqueBadges = new Set();
+  habits.forEach(habit => habit.badges.forEach(badge => uniqueBadges.add(badge)));
+
+  uniqueBadges.forEach(badge => {
+    const li = document.createElement("li");
+    li.textContent = badge;
+    badgeList.appendChild(li);
+  });
+}

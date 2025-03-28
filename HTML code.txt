@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Tracker App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <h1>Habit Tracker</h1>
+    
+    <div class="habit-form">
+      <input type="text" id="habit-input" placeholder="Add a new habit">
+      <button class="add-habit" onclick="addHabit()">Add Habit</button>
+      <button class="delete-all" onclick="deleteAllHabits()">Delete All Habits</button>
+    </div>
+
+    <div id="habit-list" class="habit-list"></div>
+
+    <div id="badges" class="badges">
+      <h3>Badges</h3>
+      <ul id="badge-list"></ul>
+    </div>
+
+    <div id="streaks" class="streaks">
+      <h3>Streaks</h3>
+      <ul id="streak-list"></ul>
+    </div>
+
+    <p class="motivation">Stay Motivated! 💪</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
